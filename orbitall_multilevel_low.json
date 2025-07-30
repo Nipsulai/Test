@@ -1,0 +1,110 @@
+{
+    "run_name": "orbitall_multilevel-test_PBE",
+    "save_dir": "./train_results/orbitall/transfer_learning/PBE",
+    "load_checkpoint": false,
+    "checkpoint_dir": "./train_results/orbitall/transfer_learning/checkpoint.pth",
+    "load_pretrained": false,
+    "pretrained_dir": "",
+    "seed": 42,
+    "use_wandb": true,
+    "show_tqdm": false,
+    
+    "distributed": false,
+    "forces": false,
+    "openshell": false,
+    "debug": false,
+    "mae_disp_units": ["mhartree"],
+
+    "possible_elements": [1, 6, 7, 8, 9],
+    "charge_shift": false,
+    "elementwise_shift": true,
+    "freeze_shifts": false,
+    "normalize_label": true,
+    "delta_learning": false,
+
+    "data": {
+        "train_datafiles": [
+          "./multilevel_PBE_M06-2X.hdf5"
+        ],
+        "val_datafiles": [
+          "./multilevel_PBE_M06-2X.hdf5"
+        ],
+        "test_datafiles": [
+          "./multilevel_PBE_M06-2X.hdf5"
+        ],
+        "train_size": 2000,
+        "val_size": 200,
+        "test_size": 200,
+        "batch_size": 64,
+        "label": "PBE_energy_mHa",
+        "base_label": "",
+        "label_unit": "mhartree",
+        "base_label_unit": "mhartree",
+        "output_unit": "mhartree",
+        "geom_unit": "bohr",
+        "subsets": [
+            {"spin": 0, "charge": 0, "name": "neutral"}
+        ],
+        "one_body_features": ["F_a", "F_b", "P_a", "P_b", "S", "H"],
+        "ndim": 6,
+        "two_body_features": ["F_a", "F_b", "P_a", "P_b", "S", "H"],
+        "edim": 6,
+        "edge_cutoffs": {
+            "F_a": 12.0,
+            "F_b": 12.0,
+            "P_a": 12.0,
+            "P_b": 12.0,
+            "S": 12.0,
+            "H": 12.0,
+            "D": 12.0
+        }
+    },
+    
+    "optim": {
+        "optimizer": {
+            "name": "torch_adam",
+            "lr": 0.0005,
+            "eps": 1e-4
+        },
+        "lr_scheduler": {
+            "name": "linear_warmup_cosine_annealing",
+            "max_epoch": 300,
+            "warmup_epoch": 100
+        },
+        "loss_type": "smoothl1",
+        "step_scheduler_every": "1 epoch",
+        "notify_scheduler": "none",
+        "val_every": "1 epoch",
+        "early_stopping_patience": 150,
+        "early_stopping_delta_MAE_meV": 0.5,
+        "stopping_conditions": [
+            {
+                "metric": "training_time",
+                "condition": "greater",
+                "value": 604800
+            },
+            {
+                "metric": "epoch",
+                "condition": "geq",
+                "value": 300
+            }
+        ]
+    },
+
+    "model": {
+        "name": "OrbitAll",
+        "one_body_features": ["F_a", "F_b", "P_a", "P_b", "S", "H"],
+        "ndim": 6,
+        "two_body_features": ["F_a", "F_b", "P_a", "P_b", "S", "H"],
+        "edim": 6,
+        "edge_cutoffs": {
+            "F_a": 12.0,
+            "F_b": 12.0,
+            "P_a": 12.0,
+            "P_b": 12.0,
+            "S": 12.0,
+            "H": 12.0,
+            "D": 12.0
+        }
+    }
+}
